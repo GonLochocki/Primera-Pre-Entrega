@@ -1,10 +1,12 @@
 import * as fs from "fs/promises";
 
 class Product {
-  constructor(title, description, price, thumbnail, stock, code, id) {
+  constructor(title, description, price, category, status, thumbnail, stock, code, id) {
     this.title = title;
     this.description = description;
     this.price = price;
+    this.category = category;
+    this.status = true;
     this.thumbnail = thumbnail;
     this.stock = stock;
     this.code = code;
@@ -43,12 +45,13 @@ export class ProductManager {
     return this.products;
   }
 
-  async addProduct({ title, description, price, thumbnail, stock }) {
+  async addProduct({ title, description, price, category , thumbnail, stock }) {
     if (!title || !description || !price || !thumbnail || !stock) {
       throw new Error("Debe completar todos los campos.");
     }
 
     const code = ProductManager.getCode();
+    const status = true;
 
     const productoExistente = this.products.find((p) => p.code === code);
 
@@ -58,6 +61,8 @@ export class ProductManager {
         title,
         description,
         price,
+        category,
+        status,
         thumbnail,
         stock,
         code,

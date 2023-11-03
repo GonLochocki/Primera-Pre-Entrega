@@ -13,7 +13,7 @@ export class cartManager {
   }
 
   async init() {
-    return await this.escribirArchivo();
+    await this.escribirArchivo();
   }
 
   async escribirArchivo() {
@@ -29,11 +29,29 @@ export class cartManager {
   async agregarCarrito() {
     const carts = await this.leerArchivo();
     let id = await this.getId();
-    const cart = carts.push({
+    const cart = {
       id,
-      productos: [],
-    });
+      products: [],
+    };
+    carts.push(cart);
     await this.escribirArchivo();
     return cart;
+  }
+
+  async AgregarProductoCarrito(cartId, productId) { 
+    const cart = this.carts.find((cart) => cart.id === cartId);
+    if (cart) {
+      const indexProduct = cart.products.findIndex((p) => p.id === productId);
+      if (indexProduct !== -1) {
+        cart.products[indexProduct].quantity++;
+      } else {
+        const product = {id: productId, quantity: 1}
+        cart.products.push(product);
+      }
+      await this.escribirArchivo()
+      return cart
+    }else {
+      throw new Error ("No se encontro el carrito...");
+    }
   }
 }
