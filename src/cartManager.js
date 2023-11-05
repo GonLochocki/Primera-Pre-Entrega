@@ -13,32 +13,32 @@ export class cartManager {
   }
 
   async init() {
-    await this.escribirArchivo();
+    await this.writeFile();
   }
 
-  async escribirArchivo() {
+  async writeFile() {
     return fs.writeFile(this.ruta, JSON.stringify(this.carts));
   }
 
-  async leerArchivo() {
+  async readFile() {
     const carts = await fs.readFile(this.ruta, "utf-8");
     this.carts = JSON.parse(carts);
     return this.carts;
   }
 
-  async agregarCarrito() {
-    const carts = await this.leerArchivo();
+  async addCart() {
+    const carts = await this.readFile();
     let id = await this.getId();
     const cart = {
       id,
       products: [],
     };
     carts.push(cart);
-    await this.escribirArchivo();
+    await this.writeFile();
     return cart;
   }
 
-  async AgregarProductoCarrito(cartId, productId) { 
+  async addProductCart(cartId, productId) { 
     const cart = this.carts.find((cart) => cart.id === cartId);
     if (cart) {
       const indexProduct = cart.products.findIndex((p) => p.id === productId);
@@ -48,10 +48,10 @@ export class cartManager {
         const product = {id: productId, quantity: 1}
         cart.products.push(product);
       }
-      await this.escribirArchivo()
+      await this.writeFile()
       return cart
     }else {
-      throw new Error ("No se encontro el carrito...");
+      throw new Error ("The cart is not found...");
     }
   }
 }

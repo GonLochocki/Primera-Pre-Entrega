@@ -6,7 +6,7 @@ const cm = new cartManager("./src/carts.json");
 
 cartRouter.post("/", async (req, res) => {
   await cm.init();
-  const cart = await cm.agregarCarrito();
+  const cart = await cm.addCart();
   
   res.json({
     IdCarrito: cart.id,
@@ -21,7 +21,7 @@ cartRouter.get("/:cid", (req, res)=>{
   }else{
     res.json({
       status: "error",
-      message: "Carrito no encontrado..."
+      message: "Cart not found..."
     })
   }
 });
@@ -30,7 +30,7 @@ cartRouter.post("/:cid/product/:pid", async (req, res)=>{
   let cartId = parseInt(req.params.cid);
   const productId = parseInt(req.params.pid);
   try{
-    const cart = await cm.AgregarProductoCarrito(cartId, productId);
+    const cart = await cm.addProductCart(cartId, productId);
     res.json(cart.products)
   }catch(error){
     res.json({

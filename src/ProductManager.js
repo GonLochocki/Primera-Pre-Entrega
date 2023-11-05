@@ -32,14 +32,14 @@ export class ProductManager {
   }
 
   async init() {
-    await this.escribirArchivo();
+    await this.writeFile();
   }
 
-  async escribirArchivo() {
+  async writeFile() {
     await fs.writeFile(this.ruta, JSON.stringify(this.products));
   }
 
-  async leerArchivo() {
+  async readFile() {
     const products = await fs.readFile(this.ruta, "utf-8");
     this.products = JSON.parse(products);
     return this.products;
@@ -47,15 +47,15 @@ export class ProductManager {
 
   async addProduct({ title, description, price, category , thumbnail, stock }) {
     if (!title || !description || !price || !thumbnail || !stock) {
-      throw new Error("Debe completar todos los campos.");
+      throw new Error("You most fill out all the fields...");
     }
 
     const code = ProductManager.getCode();
     const status = true;
 
-    const productoExistente = this.products.find((p) => p.code === code);
+    const existsProduct = this.products.find((p) => p.code === code);
 
-    if (!productoExistente) {
+    if (!existsProduct) {
       const id = ProductManager.getId();
       const product = new Product(
         title,
@@ -68,19 +68,19 @@ export class ProductManager {
         code,
         id
       );
-      await this.leerArchivo();
+      await this.readFile();
       this.products.push(product);
-      await this.escribirArchivo();
+      await this.writeFile();
       return product;
     } else {
       console.log(
-        "Existe un producto con el mismo codigo en la coleccion. Por favor Ingresar uno nuevo"
+        "There is a same product code in the collection..."
       );
     }
   }
 
   async getProducts(query = {}) {
-    const products = await this.leerArchivo();
+    const products = await this.readFile();
 
     if (query.limit) {
       const limit = parseInt(query.limit);
@@ -90,38 +90,43 @@ export class ProductManager {
   }
 
   async getProductById(id) {
-    await this.leerArchivo();
-    const existe = this.products.find((p) => p.id === id);
-    if (existe) {
-      return existe;
+    await this.readFile();
+    const exists = this.products.find((p) => p.id === id);
+    if (exists) {
+      return exists;
     } else {
       console.log("No se encuentra en la coleccion");
     }
   }
 
-  async updateProduct(id, datoActualizado) {
-    await this.leerArchivo();
-    const indiceProducto = this.products.findIndex((p) => p.id === id);
-    if (indiceProducto !== -1) {
-      const productoActualizado = {
-        ...this.products[indiceProducto],
-        ...datoActualizado,
+  async updateProduct(id, updatedData) {
+    await this.readFile();
+    const indexProduct = this.products.findIndex((p) => p.id === id);
+    if (indexProduct !== -1) {
+      const updatedProduct = {
+        ...this.products[indexProduct],
+        ...updatedData,
       };
-      this.products[indiceProducto] = productoActualizado;
-      await this.escribirArchivo();
-      return productoActualizado;
+      this.products[indexProduct] = updatedProduct;
+      await this.writeFile();
+      return updatedProduct;
     } else {
-      console.log("Producto no encontrado");
+      console.log("Product not found...");
     }
   }
 
   async deleteProduct(id) {
     const item = await this.getProductById(id);
-    const nuevoArreglo = this.products.filter((p) => p.id !== item.id);
-    await fs.unlink(this.ruta);
-    await this.init();
-    await this.leerArchivo();
-    this.products = nuevoArreglo;
-    await this.escribirArchivo();
+    if(item){
+
+      const newArray = this.products.filter((p) => p.id !== item.id);
+      await fs.unlink(this.ruta);
+      await this.init();
+      await this.readFile();
+      this.products = newArray;
+      await this.writeFile();
+    }else {
+      throw new Error ("The product is not found...")
+    }
   }
 }
