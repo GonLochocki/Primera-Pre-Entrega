@@ -1,4 +1,5 @@
 import * as fs from "fs/promises";
+import { ProductManager } from "./ProductManager.js";
 
 export class cartManager {
   constructor(ruta) {
@@ -38,20 +39,25 @@ export class cartManager {
     return cart;
   }
 
-  async addProductCart(cartId, productId) { 
+  async addProductCart(cartId, productId) {
+    const pm = new ProductManager("./src/products.json")
+    const productInList = await pm.getProductById(productId)
+    if(!productInList){
+      throw new Error (`The product with ID ${productId} is not found...`)
+    }
     const cart = this.carts.find((cart) => cart.id === cartId);
     if (cart) {
       const indexProduct = cart.products.findIndex((p) => p.id === productId);
       if (indexProduct !== -1) {
         cart.products[indexProduct].quantity++;
       } else {
-        const product = {id: productId, quantity: 1}
+        const product = { id: productId, quantity: 1 };
         cart.products.push(product);
       }
-      await this.writeFile()
-      return cart
-    }else {
-      throw new Error ("The cart is not found...");
+      await this.writeFile();
+      return cart;
+    } else {
+      throw new Error("The cart is not found...");
     }
   }
 }
