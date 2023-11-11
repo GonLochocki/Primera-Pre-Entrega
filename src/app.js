@@ -1,9 +1,8 @@
 import express from "express";
-import { productRouter } from "./productRouter.js";
-import { cartRouter } from "./cartRouter.js";
 import { engine } from "express-handlebars";
 import { Server } from "socket.io";
 import { webRouter } from "./webRouter.js";
+import { ProductManager } from "./ProductManager.js";
 
 const app = express();
 app.use(express.json());
@@ -14,6 +13,8 @@ app.use("/static", express.static("./static"));
 // app.use("/api/products", productRouter);
 // app.use("/api/cart", cartRouter);
 app.use("/", webRouter);
+
+const pm = new ProductManager("listProducts.json");
 
 const server = app.listen(8080, () => {
   console.log("PORT 8080 is conected!");
@@ -26,7 +27,7 @@ app.use((req, res, next) => {
   next();
 });
 
-ioServer.on("connection", (socket) => {  
+ioServer.on("connection", (socket) => {
   socket.on("addProduct", (product) => {
     console.log(product);
     req.io.sockets.emit("addProduct", product);
@@ -34,10 +35,10 @@ ioServer.on("connection", (socket) => {
 });
 
 app.post("/api/products", async (req, res) => {
-  const product = req.body;
   try {
-    req.io.sockets.emit("addProduct", product);
-    res.json(product)
+    const newProduct = await pm.addProduct(req.body);
+    req.io.sockets.emit("addProduct", newProduct);
+    res.json(newProduct);
   } catch (error) {
     res.json({ error: error.message });
   }
