@@ -28,8 +28,7 @@ app.use((req, res, next) => {
 });
 
 ioServer.on("connection", (socket) => {
-  socket.on("addProduct", (product) => {
-    console.log(product);
+  socket.on("addProduct", (product) => {    
     req.io.sockets.emit("addProduct", product);
   });
 });
@@ -43,3 +42,11 @@ app.post("/api/products", async (req, res) => {
     res.json({ error: error.message });
   }
 });
+
+app.delete("/api/products", async (req, res)=>{
+  
+
+    req.io.sockets.emit("deleteProduct")
+    res.json("Deleted...")
+  
+})
