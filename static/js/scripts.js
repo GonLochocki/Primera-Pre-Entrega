@@ -9,13 +9,14 @@ socket.on("addProduct", product => {
     listProducts.appendChild(item);
 })
 
-socket.on("deleteProduct", () => {
-    const listItems = listProducts.getElementsByTagName("li")
-    const totalItems = listItems.length;
-    if(listItems.length > 0){
-        const lastItem = listProducts[totalItems -1]
-        listProducts.removeChild(lastItem)
-    }else{
-        console.log("The list are empty...")
-    }
+socket.on("deleteProduct", (productos) => {
+    
+    listProducts.innerHTML = ""
+    productos.forEach((p)=> {
+        const item = document.createElement("li")
+        item.innerHTML = p
+        item.textContent = JSON.stringify(p)
+        listProducts.appendChild(item)
+    })
+    
 })
