@@ -1,6 +1,7 @@
 import { Router } from "express"
 import { ProductManager } from "./ProductManager.js";
 
+
 export const productRouter = Router()
 
 const pm = new ProductManager("./src/products.json");
@@ -30,7 +31,7 @@ productRouter.get("/", async (req, res) => {
   
   productRouter.post("/", async (req, res) => {
     const productBody = req.body;
-    let product = await pm.addProduct(productBody);
+    let product = await pm.addProduct(productBody);    
     res.json(product);
   });
   

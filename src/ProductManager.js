@@ -103,7 +103,7 @@ export class ProductManager {
     if (exists) {
       return exists;
     } else {
-      console.log("No se encuentra en la coleccion");
+      console.log("There is not found in the collection");
     }
   }
 
