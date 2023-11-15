@@ -50,6 +50,5 @@ app.delete("/api/products/:id", async (req, res)=>{
   await pm.readFile()
   const productos = await pm.getProducts()
   req.io.sockets.emit("deleteProduct", productos);  
-  res.json(productos);
-  
+  res.json(productos);  
 })
